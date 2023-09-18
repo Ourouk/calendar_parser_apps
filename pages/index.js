@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 
 const Home = () => {
   const [outputText, setOutputText] = useState('');
@@ -18,8 +18,21 @@ const Home = () => {
 
   const confirmButton = () => {
     console.log([...inputValues, currentInput]);
-
+    sendToApi();
   };
+
+  const sendToApi = useCallback(() => {
+    let urlString = "";
+    for (let i = 0; i < inputValues.length; i++) {
+      urlString += "\""+ inputValues[i]+"\"";
+      urlString += ",";
+    }
+    urlString += "\""+ currentInput +"\"";
+
+    fetch("http://127.0.0.1:5000/available_events?URL="+urlString)
+        //.then((response) => response.json())
+        .then((response)=> console.log(response));
+  },[inputValues,currentInput]);
 
   return (
     <div className="bg-blue-100 p-8">
@@ -38,7 +51,7 @@ const Home = () => {
         <input
           type="text"
           value={currentInput}
-          onChange={handleInputChange}
+          onInput={(e) => handleInputChange(e)}
           className="border border-gray-300 p-2 mb-5 rounded-md"
           placeholder="Type something..."
         />
